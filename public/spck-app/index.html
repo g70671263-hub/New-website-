@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Personal Developer Skill Radar App for Spck Editor on Android">
+  <title>SkillRadar - Mobile Developer Tracker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="radar-icon-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a10 10 0 0 1 10 10"></path>
+            <circle cx="12" cy="12" r="6"></circle>
+            <circle cx="12" cy="12" r="2"></circle>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">SkillRadar</h1>
+          <p class="brand-subtitle">Spck Mobile Edition</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="icon-btn" title="Toggle Theme" aria-label="Toggle theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+        <button id="addSkillModalBtn" class="primary-btn" title="Add Skill">
+          <span>+ Add Skill</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Preset Profile Selector & Mode Toggles -->
+      <section class="toolbar-section">
+        <div class="preset-selector-group">
+          <label for="profilePresetSelect" class="input-label">Career Preset:</label>
+          <select id="profilePresetSelect" class="custom-select">
+            <option value="android">📱 Android & Mobile Dev</option>
+            <option value="fullstack">🌐 Full-Stack Web Dev</option>
+            <option value="data_ai">🧠 AI & Data Science</option>
+            <option value="devops">☁️ Cloud & DevOps</option>
+            <option value="custom">✨ Custom User Profile</option>
+          </select>
+        </div>
+
+        <div class="view-toggles">
+          <button id="toggleTargetBtn" class="toggle-pill active" title="Show/Hide Target Goals">
+            <span class="legend-dot target-dot"></span> Target Goals
+          </button>
+          <button id="toggleValuesBtn" class="toggle-pill active" title="Show/Hide Numbers">
+            <span>Labels & %</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Radar Canvas Card -->
+      <section class="radar-card">
+        <div class="radar-card-header">
+          <div class="stats-banner">
+            <div class="stat-item">
+              <span class="stat-number" id="avgCurrentScore">0%</span>
+              <span class="stat-desc">Current Avg</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number stat-target" id="avgTargetScore">0%</span>
+              <span class="stat-desc">Target Avg</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number stat-gap" id="totalGapScore">0%</span>
+              <span class="stat-desc">Skill Gap</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="radarCanvas" width="440" height="440"></canvas>
+          <div id="chartTooltip" class="chart-tooltip"></div>
+        </div>
+
+        <!-- Legend -->
+        <div class="chart-legend">
+          <div class="legend-item">
+            <span class="legend-color-box current-color"></span>
+            <span>Current Proficiency</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color-box target-color"></span>
+            <span>Target Goal</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Category Filter Tabs -->
+      <section class="filter-section">
+        <div class="category-tabs" id="categoryTabs">
+          <button class="cat-tab active" data-category="all">All Skills (<span id="countAll">0</span>)</button>
+          <button class="cat-tab" data-category="Language">Languages</button>
+          <button class="cat-tab" data-category="Framework">Frameworks</button>
+          <button class="cat-tab" data-category="Architecture">Architecture</button>
+          <button class="cat-tab" data-category="Tooling">Tooling</button>
+          <button class="cat-tab" data-category="SoftSkill">Soft Skills</button>
+        </div>
+      </section>
+
+      <!-- Skills Control List -->
+      <section class="skills-section">
+        <div class="section-title-bar">
+          <h2 class="section-heading">Manage Competencies</h2>
+          <span class="section-hint">Drag sliders to adjust in real-time</span>
+        </div>
+
+        <div id="skillsList" class="skills-list">
+          <!-- Populated by app.js -->
+        </div>
+      </section>
+
+      <!-- Gap Analysis & Growth Focus -->
+      <section class="gap-analysis-section">
+        <h2 class="section-heading">Top Growth Priorities</h2>
+        <p class="section-subtext">Skills with the biggest gap between current mastery and your target.</p>
+        <div id="gapPrioritiesList" class="gap-list">
+          <!-- Populated by app.js -->
+        </div>
+      </section>
+
+      <!-- Quick Storage & Action Tools -->
+      <section class="actions-card">
+        <h3 class="actions-card-title">Storage & Backup</h3>
+        <p class="actions-card-desc">Data is auto-saved in your Spck browser storage. You can also backup or restore anytime.</p>
+        <div class="action-buttons-grid">
+          <button id="exportJsonBtn" class="outline-btn">
+            <span>💾 Backup JSON</span>
+          </button>
+          <button id="importJsonBtn" class="outline-btn">
+            <span>📂 Restore JSON</span>
+          </button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none">
+          <button id="exportImageBtn" class="outline-btn">
+            <span>🖼️ Save PNG Chart</span>
+          </button>
+          <button id="resetDefaultsBtn" class="outline-btn text-danger">
+            <span>🔄 Reset Preset</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: Add or Edit Skill -->
+    <div id="skillModal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add New Skill</h3>
+          <button id="modalCloseBtn" class="modal-close">&times;</button>
+        </div>
+        <form id="skillForm" class="modal-form">
+          <input type="hidden" id="editSkillId" value="">
+          
+          <div class="form-group">
+            <label for="skillNameInput" class="form-label">Skill Name *</label>
+            <input type="text" id="skillNameInput" class="form-input" placeholder="e.g., Kotlin, Docker, GraphQL" required>
+          </div>
+
+          <div class="form-group">
+            <label for="skillCategorySelect" class="form-label">Category</label>
+            <select id="skillCategorySelect" class="form-select">
+              <option value="Language">Language (Java, Kotlin, JS, etc.)</option>
+              <option value="Framework">Framework (React, Compose, Spring)</option>
+              <option value="Architecture">Architecture & Patterns (MVVM, Clean)</option>
+              <option value="Tooling">Tooling & DevOps (Git, CI/CD, Gradle)</option>
+              <option value="SoftSkill">Soft Skills (Communication, Mentorship)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="skillCurrentInput" class="form-label">Current Mastery: <span id="currentValBadge">70%</span></label>
+              <input type="range" id="skillCurrentInput" class="range-slider" min="10" max="100" value="70" step="5">
+            </div>
+            <div class="form-group half">
+              <label for="skillTargetInput" class="form-label">Target Goal: <span id="targetValBadge">90%</span></label>
+              <input type="range" id="skillTargetInput" class="range-slider" min="10" max="100" value="90" step="5">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="skillNotesInput" class="form-label">Focus / Learning Plan (Optional)</label>
+            <input type="text" id="skillNotesInput" class="form-input" placeholder="e.g. Build coroutines project, read docs">
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="modalCancelBtn" class="secondary-btn">Cancel</button>
+            <button type="submit" class="primary-btn">Save Skill</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>SkillRadar Spck Android Edition &middot; 100% Offline &middot; HTML5 Canvas &amp; ES6</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

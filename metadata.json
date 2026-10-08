@@ -1,0 +1,6 @@
+{
+  "name": "SkillRadar - Spck Android Mobile Suite",
+  "description": "Interactive skill radar spider chart web app with standalone HTML/CSS/JavaScript bundle for Spck Editor on Android, instant ZIP export, and complete PDF setup guide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
